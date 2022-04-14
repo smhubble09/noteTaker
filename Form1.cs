@@ -11,13 +11,28 @@ using System.Windows.Forms;
 
 namespace noteTaker{
     public partial class NotesForm : Form{
-        DataTable table;
+        DataTable notesTable;
+        string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0; Data Source=C:\repos\noteTaker\NotesApp.accdb; Jet OLEDB:Database Password=notesApp22!";
         public NotesForm(){
             InitializeComponent();
         }
 
         private void NotesForm_Load(object sender, EventArgs e){
-            this.notesTableAdapter.Fill(this.notesAppDataSet.Notes);
+            string query = "SELECT * FROM Notes";
+            try {
+                OleDbConnection conn = new OleDbConnection(connectionString);
+                OleDbCommand cmd = new OleDbCommand(query, conn);
+
+                conn.Open();
+                OleDbDataAdapter da = new OleDbDataAdapter(cmd);
+                notesTable = new DataTable();
+                da.Fill(notesTable);
+            }
+            catch (Exception ex) {
+                MessageBox.Show(ex.Message);
+            }
+
+            //this.notesTableAdapter.Fill(this.notesAppDataSet.Notes);
         }
 
         private void SaveButton_Click(object sender, EventArgs e){
