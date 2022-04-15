@@ -17,116 +17,110 @@ namespace noteTaker{
             InitializeComponent();
         }
 
+        private void ClearButton_Click(object sender, EventArgs e) {
+            TitleTextBox.Clear();
+            MsgTextBox.Clear();
+            NoteIDLabel.Text = "0";
+        }
+
         private void NotesForm_Load(object sender, EventArgs e){
             string query = "SELECT * FROM Notes";
+            OleDbConnection conn = new OleDbConnection(connectionString);
             try {
-                OleDbConnection conn = new OleDbConnection(connectionString);
+                
                 OleDbCommand cmd = new OleDbCommand(query, conn);
 
                 conn.Open();
                 OleDbDataAdapter da = new OleDbDataAdapter(cmd);
                 notesTable = new DataTable();
                 da.Fill(notesTable);
+
+                NotesDataGridView.DataSource = notesTable;
             }
             catch (Exception ex) {
                 MessageBox.Show(ex.Message);
             }
-
+            finally { 
+                conn.Close();
+            }
             //this.notesTableAdapter.Fill(this.notesAppDataSet.Notes);
         }
 
         private void SaveButton_Click(object sender, EventArgs e){
-            OleDbConnection conn = new OleDbConnection();
-            conn.ConnectionString = @"Provider=Microsoft.ACE.OLEDB.12.0; Data Source=C:\repos\noteTaker\NotesApp.accdb; Jet OLEDB:Database Password=notesApp22!";
+            OleDbConnection conn = new OleDbConnection(connectionString);
+            string noteTitle = TitleTextBox.Text;
+            string noteMessage = MsgTextBox.Text;
+            if (NoteIDLabel.Text == "0") {
+                string query = "INSERT INTO Notes (Title,Message)VALUES('" + noteTitle + "','" + noteMessage + "')";
+                try {
+                    OleDbCommand cmd = new OleDbCommand(query, conn);
+                    conn.Open();
 
-            try {
-                conn.Open();
-                String noteTitle = TitleTextBox.Text.ToString();
-                String noteMessage = MsgTextBox.Text;
-                String query = "INSERT INTO Notes (Title,Message)VALUES('" + noteTitle + "','" + noteMessage + "')";
-
-                OleDbCommand cmd = new OleDbCommand(query, conn);
-                cmd.ExecuteNonQuery();
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex) {
+                    MessageBox.Show("Failed due to " + ex.Message);
+                    conn.Close();
+                }
+                finally {
+                    conn.Close();
+                    NotesForm_Load(sender, e);
+                    ClearButton_Click(sender, e);
+                }
             }
-            catch (Exception ex) {
-                MessageBox.Show("Failed due to " + ex.Message);
-                conn.Close();
+            else {
+                string query = "UPDATE Notes SET Title=@a1, Message=a2 WHERE ID=@a0";
+                try {
+                    OleDbCommand cmd = new OleDbCommand(query, conn);
+                    cmd.Parameters.AddWithValue("a0",NoteIDLabel.Text);
+                    cmd.Parameters.AddWithValue("a1", TitleTextBox.Text);
+                    cmd.Parameters.AddWithValue("a2", MsgTextBox.Text);
+
+                    conn.Open();
+
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex) {
+                    MessageBox.Show("Failed due to " + ex.Message);
+                    conn.Close();
+                }
+                finally {
+                    conn.Close();
+                    NotesForm_Load(sender, e);
+                    ClearButton_Click(sender, e);
+                }
             }
-            finally {
-                MessageBox.Show("Note Saved!");
-                conn.Close();
-                //PopulateDataGridView();
-            }
-        }
-
-        ////Function for retrieving data from ms access database and displaying it on DataGridView
-        //public void PopulateDataGridView() {
-        //    table = new DataTable();
-        //    OleDbConnection conn = new OleDbConnection();
-        //    conn.ConnectionString = @"Provider=Microsoft.ACE.OLEDB.12.0; Data Source=C:\repos\noteTaker\NotesApp.accdb; Jet OLEDB:Database Password=notesApp22!";
-        //    String query = "SELECT * FROM Notes";
-        //    //First, clear all rows before populating datagridview with data from MS Access Database. Check if datagridview rows are empty before clearing.
-        //    if (table.Rows.Count > 0) {
-        //        table.Rows.Clear();
-        //    }
-
-        //    try {
-        //        conn.Open();
-        //        //OleDbDataAdapter adapter = new OleDbDataAdapter(sqlQuery, acceddDatabaseConnection);
-        //        OleDbCommand cmd = new OleDbCommand(query, conn);
-        //        OleDbDataReader reader = cmd.ExecuteReader();
-
-        //        while (reader.Read()) {
-        //            //Console.WriteLine(reader[8].GetType());
-        //            table.Rows.Add(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), (byte[])reader[8]);
-        //        }
-
-        //        reader.Close();
-        //    }
-        //    catch (Exception ex) {
-        //        MessageBox.Show(ex.StackTrace);
-        //    }
-        //    finally {
-        //        //Finally Close MS Access Database Connection
-        //        if (conn != null) {
-        //            conn.Close();
-        //        }
-
-
-        //    }
-        //}
-
-        private void ClearButton_Click(object sender, EventArgs e) {
-            TitleTextBox.Clear();
-            MsgTextBox.Clear();
         }
 
         private void OpenButton_Click(object sender, EventArgs e) {
-
+            NoteIDLabel.Text = this.NotesDataGridView.CurrentRow.Cells[0].Value.ToString();
+            TitleTextBox.Text = this.NotesDataGridView.CurrentRow.Cells[1].Value.ToString();
+            MsgTextBox.Text = this.NotesDataGridView.CurrentRow.Cells[2].Value.ToString();    
         }
 
         private void DeleteButton_Click(object sender, EventArgs e) {
-            OleDbConnection conn = new OleDbConnection();
-            conn.ConnectionString = @"Provider=Microsoft.ACE.OLEDB.12.0; Data Source=C:\repos\noteTaker\NotesApp.accdb; Jet OLEDB:Database Password=notesApp22!";
+            OleDbConnection conn = new OleDbConnection(connectionString);
 
             try {
-                DataRow row = (NotesDataGridView.SelectedRows[0].DataBoundItem as DataRowView).Row;
-                conn.Open();
-                String noteTitle = TitleTextBox.Text.ToString();
-                String noteMessage = MsgTextBox.Text;
-                String query = "DELETE FROM Notes WHERE ID = " + row["ID"];
-
+                //int rowIndex = NotesDataGridView.CurrentCell.RowIndex;
+                string id = Convert.ToString(NotesDataGridView.Rows[NotesDataGridView.CurrentRow.Index].Cells[0].Value);
+                //DataRow row = (NotesDataGridView.SelectedRows[0].DataBoundItem as DataRowView).Row;
+                string query = "DELETE FROM Notes WHERE ID=@b0";
                 OleDbCommand cmd = new OleDbCommand(query, conn);
+                cmd.Parameters.AddWithValue("b0", id);
+
+                conn.Open();
                 cmd.ExecuteNonQuery();
+                foreach (DataGridViewRow item in this.NotesDataGridView.SelectedRows)
+                    NotesDataGridView.Rows.RemoveAt(item.Index);
             }
             catch (Exception ex) {
                 MessageBox.Show("Failed due to " + ex.Message);
                 conn.Close();
             }
             finally {
-                MessageBox.Show("Note Deleted!");
                 conn.Close();
-                //PopulateDataGridView();
+                NotesForm_Load(sender, e);
             }
         }
     }

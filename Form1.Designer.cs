@@ -42,7 +42,10 @@
             this.DeleteButton = new System.Windows.Forms.Button();
             this.notesTableAdapter = new noteTaker.NotesAppDataSetTableAdapters.NotesTableAdapter();
             this.ClearButton = new System.Windows.Forms.Button();
+            this.NoteIDLabel = new System.Windows.Forms.Label();
+            this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.titleDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Message = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.NotesDataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.notesBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.notesAppDataSet)).BeginInit();
@@ -97,14 +100,18 @@
             this.NotesDataGridView.AllowUserToResizeColumns = false;
             this.NotesDataGridView.AllowUserToResizeRows = false;
             this.NotesDataGridView.AutoGenerateColumns = false;
+            this.NotesDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.NotesDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.NotesDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.titleDataGridViewTextBoxColumn});
+            this.ID,
+            this.titleDataGridViewTextBoxColumn,
+            this.Message});
             this.NotesDataGridView.DataSource = this.notesBindingSource;
             this.NotesDataGridView.Location = new System.Drawing.Point(309, 37);
             this.NotesDataGridView.Name = "NotesDataGridView";
             this.NotesDataGridView.ReadOnly = true;
             this.NotesDataGridView.RowHeadersVisible = false;
+            this.NotesDataGridView.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.NotesDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.NotesDataGridView.Size = new System.Drawing.Size(166, 160);
             this.NotesDataGridView.TabIndex = 5;
@@ -163,6 +170,24 @@
             this.ClearButton.UseVisualStyleBackColor = true;
             this.ClearButton.Click += new System.EventHandler(this.ClearButton_Click);
             // 
+            // NoteIDLabel
+            // 
+            this.NoteIDLabel.AutoSize = true;
+            this.NoteIDLabel.Location = new System.Drawing.Point(1, 0);
+            this.NoteIDLabel.Name = "NoteIDLabel";
+            this.NoteIDLabel.Size = new System.Drawing.Size(13, 13);
+            this.NoteIDLabel.TabIndex = 10;
+            this.NoteIDLabel.Text = "0";
+            this.NoteIDLabel.Visible = false;
+            // 
+            // ID
+            // 
+            this.ID.DataPropertyName = "ID";
+            this.ID.HeaderText = "ID";
+            this.ID.Name = "ID";
+            this.ID.ReadOnly = true;
+            this.ID.Visible = false;
+            // 
             // titleDataGridViewTextBoxColumn
             // 
             this.titleDataGridViewTextBoxColumn.DataPropertyName = "Title";
@@ -170,11 +195,20 @@
             this.titleDataGridViewTextBoxColumn.Name = "titleDataGridViewTextBoxColumn";
             this.titleDataGridViewTextBoxColumn.ReadOnly = true;
             // 
+            // Message
+            // 
+            this.Message.DataPropertyName = "Message";
+            this.Message.HeaderText = "Message";
+            this.Message.Name = "Message";
+            this.Message.ReadOnly = true;
+            this.Message.Visible = false;
+            // 
             // NotesForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(498, 250);
+            this.Controls.Add(this.NoteIDLabel);
             this.Controls.Add(this.ClearButton);
             this.Controls.Add(this.DeleteButton);
             this.Controls.Add(this.OpenButton);
@@ -211,7 +245,10 @@
         private System.Windows.Forms.BindingSource notesBindingSource;
         private NotesAppDataSetTableAdapters.NotesTableAdapter notesTableAdapter;
         private System.Windows.Forms.Button ClearButton;
+        private System.Windows.Forms.Label NoteIDLabel;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ID;
         private System.Windows.Forms.DataGridViewTextBoxColumn titleDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Message;
     }
 }
 
