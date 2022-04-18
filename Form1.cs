@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.OleDb;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace noteTaker{
@@ -43,7 +37,6 @@ namespace noteTaker{
             finally { 
                 conn.Close();
             }
-            //this.notesTableAdapter.Fill(this.notesAppDataSet.Notes);
         }
 
         private void SaveButton_Click(object sender, EventArgs e){
@@ -102,9 +95,7 @@ namespace noteTaker{
             OleDbConnection conn = new OleDbConnection(connectionString);
 
             try {
-                //int rowIndex = NotesDataGridView.CurrentCell.RowIndex;
                 string id = Convert.ToString(NotesDataGridView.Rows[NotesDataGridView.CurrentRow.Index].Cells[0].Value);
-                //DataRow row = (NotesDataGridView.SelectedRows[0].DataBoundItem as DataRowView).Row;
                 string query = "DELETE FROM Notes WHERE ID=@b0";
                 OleDbCommand cmd = new OleDbCommand(query, conn);
                 cmd.Parameters.AddWithValue("b0", id);
